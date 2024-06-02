@@ -46,7 +46,7 @@ bot.onText(/\/name (.+)/, async (msg, match) => {
   bot.sendMessage(chatId, `Thanks, ${name}! Your name was updated.`);
 });
 
-bot.onText(/\/insert (.+)/, async (msg, match) => {
+bot.onText(/\/insert ([\s\S]+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const content = match[1];
   const sender = msg.from.id;
@@ -100,10 +100,20 @@ bot.onText(/\/\?/, async (msg) => {
     results.push(result);
   }
 
-  if (results.length > 0) {
-    const reply = results
+  // choose random 3 records from the results
+  const random_results = [];
+  for (let i = 0; i < 3; i++) {
+    const random_index = Math.floor(Math.random() * results.length);
+    random_results.push(results[random_index]);
+    results.splice(random_index, 1);
+  }
+
+
+
+  if (random_results.length > 0) {
+    const reply = random_results
       .map((r, idx) => `${idx + 1}. ${r.content} by ${r.username}`)
-      .join("\n");
+      .join("\n---\n");
     bot.sendMessage(chatId, reply);
   } else {
     bot.sendMessage(chatId, "No results found.");
@@ -145,13 +155,20 @@ bot.on("message", async (msg) => {
     const result = {};
     result.content = record.content.trim();
     result.username = await getUsername(record.telegram_id);
+    result.timestamp = record.created_at.toString().slice(0, 10);
+
     results.push(result);
   }
 
   if (results.length > 0) {
     const reply = results
-      .map((r, idx) => `${idx + 1}. ${r.content} by ${r.username}`)
-      .join("\n");
+      .map(
+        (r, idx) =>
+          `${idx + 1}. ${r.content} | by ${r.username} | written on ${
+            r.timestamp
+          }`
+      )
+      .join("\n---\n");
     bot.sendMessage(chatId, reply);
   } else {
     bot.sendMessage(chatId, "No results found.");
