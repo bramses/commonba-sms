@@ -112,7 +112,7 @@ bot.onText(/\/\?/, async (msg) => {
 
   if (random_results.length > 0) {
     const reply = random_results
-      .map((r, idx) => `${idx + 1}. ${r.content} by ${r.username}`)
+      .map((r, idx) => `${r.content}\n\nby ${r.username}`)
       .join("\n---\n");
     bot.sendMessage(chatId, reply);
   } else {
@@ -164,7 +164,7 @@ bot.on("message", async (msg) => {
     const reply = results
       .map(
         (r, idx) =>
-          `${idx + 1}. ${r.content} | by ${r.username} | written on ${
+          `${r.content}\n\nby ${r.username}\n\nwritten on ${
             r.timestamp
           }`
       )
